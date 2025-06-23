@@ -72,4 +72,59 @@ const deleteBook = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export { getAllBooks, getBookById, createBook, updateBook, deleteBook };
+// Get books by author ID
+const getBooksByAuthor = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const books = await Book.find({ author: req.params.authorId })
+      .populate("author")
+      .populate("category");
+    res.status(200).json(books);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch books by author", error });
+  }
+};
+
+// Get books by category ID
+const getBooksByCategory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const books = await Book.find({ category: req.params.catId })
+      .populate("author")
+      .populate("category");
+    res.status(200).json(books);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch books by category", error });
+  }
+};
+
+// Search books by title
+const searchBooksByTitle = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const books = await Book.find({
+      title: { $regex: req.params.title, $options: "i" },
+    })
+      .populate("author")
+      .populate("category");
+    res.status(200).json(books);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to search books by title", error });
+  }
+};
+
+export {
+  getAllBooks,
+  getBookById,
+  createBook,
+  updateBook,
+  deleteBook,
+  getBooksByAuthor,
+  getBooksByCategory,
+  searchBooksByTitle,
+};
